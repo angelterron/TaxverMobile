@@ -1,0 +1,94 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent"  tools:context=".Login"
+    android:background="@drawable/abc"
+    android:fitsSystemWindows="true"
+    android:theme="@style/Transparent">
+
+    <View
+        android:id="@+id/title"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="#000000"
+        android:alpha="0.5"         />
+
+    <ImageView
+        android:layout_width="180dp"
+        android:layout_height="180dp"
+        android:id="@+id/logo"
+        android:layout_marginTop="50dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:src="@drawable/logo"/>
+
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:id="@+id/editText"
+        android:drawableStart="@drawable/ic_account"
+        android:hint="Correo electronico..."
+        android:textColorHint="#BBBBBB"
+        android:textColor="#FFFFFF"
+        android:drawablePadding="10dp"
+        android:textSize="20sp"
+        android:layout_below="@+id/logo"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="40dp" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="textPassword"
+        android:layout_marginTop="2dp"
+        android:ems="10"
+        android:drawablePadding="10dp"
+        android:hint="Contraseña..."
+        android:drawableStart="@drawable/ic_key"
+        android:textSize="20sp"
+        android:textColorHint="#BBBBBB"
+        android:textColor="#FFFFFF"
+        android:id="@+id/editText2"
+        android:layout_below="@+id/editText"
+        android:layout_alignLeft="@+id/editText"
+        android:layout_alignStart="@+id/editText"
+        android:layout_alignRight="@+id/editText"
+        android:layout_alignEnd="@+id/editText" />
+    <Button
+        android:id="@+id/iniciarsesion"
+
+        android:text="INICIAR SESION"
+        android:textColor="#FFFFFF"
+        android:textSize="20sp"
+        android:layout_marginTop="30dp"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/editText2"
+        android:layout_width="wrap_content"
+        android:layout_height="35dp"
+        android:background="@drawable/buttonbackground"
+        android:shadowColor="#A8A8A8"
+        android:shadowDx="0"
+        android:shadowDy="0"
+        android:shadowRadius="5"
+        />
+    <Button
+        android:id="@+id/registrarse"
+
+        android:text="REGISTRARSE"
+        android:textColor="#FFFFFF"
+        android:textSize="20sp"
+        android:layout_marginTop="5dp"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/iniciarsesion"
+        android:layout_width="wrap_content"
+        android:layout_height="35dp"
+        android:background="@drawable/registrar_background"
+        android:shadowColor="#A8A8A8"
+        android:shadowDx="0"
+        android:shadowDy="0"
+        android:shadowRadius="5"
+        />
+
+</RelativeLayout>
