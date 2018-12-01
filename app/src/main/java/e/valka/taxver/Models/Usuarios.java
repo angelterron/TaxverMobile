@@ -11,4 +11,5 @@ public class Usuarios implements Serializable {
     public String Descripcion;
     public int IdPersona;
     public Persona IdPersonaNavigation;
+    public String PhoneId;
 }

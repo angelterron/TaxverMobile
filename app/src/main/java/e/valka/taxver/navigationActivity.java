@@ -1,6 +1,8 @@
 package e.valka.taxver;
 
 import android.Manifest;
+import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -15,7 +17,7 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.FragmentTransaction;
+import android.app.DialogFragment;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
@@ -27,11 +29,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -41,6 +46,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.gson.Gson;
+import com.microsoft.windowsazure.notifications.NotificationsManager;
 
 import org.json.JSONObject;
 
@@ -49,9 +55,13 @@ import java.io.Serializable;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import e.valka.taxver.Fragments.ConductorFragment;
 import e.valka.taxver.Models.Conductor;
 import e.valka.taxver.Models.Posicionconductor;
 import e.valka.taxver.Models.Usuarios;
+import e.valka.taxver.Notifications.Azure.MyHandler;
+import e.valka.taxver.Notifications.Azure.NotificationSettings;
+import e.valka.taxver.Notifications.Azure.RegistrationIntentService;
 import e.valka.taxver.Utils.DownloadAsyncTask;
 import e.valka.taxver.Utils.URLS;
 
@@ -60,12 +70,19 @@ public class navigationActivity extends AppCompatActivity
     private GoogleMap mMap;
     private Usuarios usuario;
     private Conductor con;
+    public static final String TAG = "PEKA";
+    public static navigationActivity mainActivity;
+    public static Boolean isVisible = true;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
+    private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_navigation);
         usuario = (Usuarios) getIntent().getSerializableExtra("usuario");
+        setContentView(R.layout.activity_navigation);
+        mainActivity = this;
+        NotificationsManager.handleNotifications (this, NotificationSettings.SenderId, MyHandler.class);
+        registerWithNotificationHubs();
         Toolbar toolbar =  findViewById(R.id.toolbar);
         toolbar.setSubtitleTextColor(Color.WHITE);
         toolbar.setTitleTextColor(Color.WHITE);
@@ -74,9 +91,15 @@ public class navigationActivity extends AppCompatActivity
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-        FloatingActionButton fab =  findViewById(R.id.fab);
+        FloatingActionButton fab =  findViewById(R.id.fabtax);
+        FloatingActionButton fabact =  findViewById(R.id.fabact);
+        FloatingActionButton fabdesc =  findViewById(R.id.fabdesc);
+        fabact.hide();
+        fabdesc.hide();
         fab.setOnClickListener((v)->{
-
+            v.setVisibility(View.GONE);
+            fabact.show();
+            showEditDialog();
         });
         Window window = this.getWindow();
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
@@ -147,8 +170,6 @@ public class navigationActivity extends AppCompatActivity
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         try {
-            // Customise the styling of the base map using a JSON object defined
-            // in a raw resource file.
             boolean success = mMap.setMapStyle(
                     MapStyleOptions.loadRawResourceStyle(
                             this, R.raw.style));
@@ -242,5 +263,78 @@ public class navigationActivity extends AppCompatActivity
         if (conductor == null) return null;
         return conductor;
     }
+    private void showEditDialog() {
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        Fragment prev = getFragmentManager().findFragmentByTag("dialog");
+        if (prev != null) {
+            ft.remove(prev);
+        }
+        ft.addToBackStack(null);
+        DialogFragment dialogFragment = new ConductorFragment();
+        dialogFragment.show(ft, "dialog");
+    }
+    public void registerWithNotificationHubs ()
+        {
+        if (checkPlayServices ()) {
+            // Start IntentService to register this application with FCM.
+            Intent intent = new Intent (this, RegistrationIntentService.class);
+            startService (intent);
+        }
+    }
+
+    private boolean checkPlayServices () {
+        GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance ();
+        int resultCode = apiAvailability.isGooglePlayServicesAvailable (this);
+
+        if (resultCode != ConnectionResult.SUCCESS) {
+            if (apiAvailability.isUserResolvableError(resultCode)) {
+                apiAvailability.getErrorDialog(this, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST).show ();
+            } else {
+                Log.i ("PEKKA", "This device is not supported by Google Play Services.");
+                ToastNotify ("This device is not supported by Google Play Services.");
+                finish ();
+            }
+
+            return false;
+        }
+
+        return true;
+    }
+    @Override
+    protected void onStart () {
+        super.onStart ();
+        isVisible = true;
+    }
+
+    @Override
+    protected void onPause () {
+        super.onPause ();
+        isVisible = false;
+    }
+
+    @Override
+    protected void onResume () {
+        super.onResume ();
+        isVisible = true;
+    }
+
+    @Override
+    protected void onStop () {
+        super.onStop ();
+        isVisible = false;
+    }
+    public void ToastNotify (final String notificationMessage) {
+        runOnUiThread (() -> {
+            Log.i("PEKKA","MIRA MAMA NO LLEGUÉ!: "+usuario.PhoneId +"POR: "+notificationMessage);
+            if(notificationMessage.equals(usuario.PhoneId)){
+                Toast.makeText (getBaseContext (), "YOU ARE THE CHOOSEN ONE!", Toast.LENGTH_LONG).show ();
+                Log.i("PEKKA","MIRA MAMA SI LLEGUÉ!");
+            }
+        });
+    }
+    public String getID(){
+        return usuario.PhoneId;
+    }
+
 }
 

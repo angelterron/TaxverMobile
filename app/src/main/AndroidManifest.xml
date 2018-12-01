@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="e.valka.taxver">
 
     <!--
@@ -9,14 +10,20 @@
     -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.GET_ACCOUNTS"/>
+    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
+    <uses-permission-sdk-23 android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission-sdk-23 android:name="android.permission.ACCESS_WIFI_STATE" />
 
     <application
         android:allowBackup="true"
-        android:icon="@drawable/logo"
+        android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@drawable/logo"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        tools:ignore="GoogleAppIndexingWarning">
         <activity android:name=".Login">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -45,7 +52,27 @@
             android:label="@string/title_activity_navigation"
             android:theme="@style/AppTheme" />
         <activity android:name=".Conductores" />
-        <activity android:name=".conductor_password"></activity>
+        <activity android:name=".conductor_password" />
+        <!-- servicio utilizado para procesar los token y mensajes desde firebase -->
+        <!-- servicio local utilizado para registrar la app ante Azure Notifications Hub -->
+        <service android:name=".Notifications.Azure.RegistrationIntentService" android:exported="false" />
+
+        <!-- objeto receptor de las notificaciones, establece los permisos requeridos y mediante filtros la app que los procesa-->
+        <receiver android:name="com.microsoft.windowsazure.notifications.NotificationsBroadcastReceiver"
+            android:permission="com.google.android.c2dm.permission.SEND">
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+                <category android:name="e.valka.taxver" />
+            </intent-filter>
+        </receiver>
+
+        <!-- establece la versión de las librerías de Google Messaging System que se utiliza -->
+        <meta-data android:name="com.google.android.gms.version" android:value="@integer/google_play_services_version" />
+
+        <!-- para versiones poteriores a android oreo, es necesario especificar al menos un canal donde se entregaran las notificaciones -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="@string/notitication_channel_id" />
     </application>
 
 </manifest>

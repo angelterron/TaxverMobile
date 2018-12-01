@@ -7,5 +7,6 @@ public class URLS {
     public static final String CreateConductor = "https://taxver.azurewebsites.net/Login/CreateConductor/";
     public static final String CreateCliente = "https://taxver.azurewebsites.net/Login/CreateCliente/";
     public static final String ActualizarPosicion = "https://taxver.azurewebsites.net/JSON/ActualizarPosicion/";
+    public static final String servidor = "https://taxver.azurewebsites.net/";
     public static final String TAG = "PKAT";
 }

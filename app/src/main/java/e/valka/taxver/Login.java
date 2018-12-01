@@ -1,8 +1,18 @@
 package e.valka.taxver;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.wifi.WifiManager;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.content.PermissionChecker;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.telephony.TelephonyManager;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -17,7 +27,8 @@ import e.valka.taxver.Utils.DownloadAsyncTask;
 import e.valka.taxver.Utils.URLS;
 
 public class Login extends AppCompatActivity {
-
+    public static final int PERMISSIONS = 1001;
+    String deviceID = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,6 +42,15 @@ public class Login extends AppCompatActivity {
             Intent registrarse = new Intent(this,register.class);
             startActivity(registrarse);
         });
+        int a = ContextCompat.checkSelfPermission (this, Manifest.permission.READ_PHONE_STATE);
+        int b = ContextCompat.checkSelfPermission (this, Manifest.permission.ACCESS_WIFI_STATE);
+
+        if ( a != PackageManager.PERMISSION_GRANTED || b != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions (this,
+                    new String [] {Manifest.permission.READ_PHONE_STATE, Manifest.permission.ACCESS_WIFI_STATE},
+                    PERMISSIONS);
+        }
+        saveToken();
         login.setOnClickListener((v)->{
             new DownloadAsyncTask (s ->{
                 Usuarios usuario = parseJSON(s);
@@ -44,14 +64,47 @@ public class Login extends AppCompatActivity {
                         if(con != null){
                             Intent conductorpass = new Intent(getBaseContext(),conductor_password.class);
                             conductorpass.putExtra("conductor",con);
+                            conductorpass.putExtra("phoneID",deviceID);
                             startActivity(conductorpass);
                         }else{
                             Toast.makeText (getBaseContext (), "¡Error al iniciar sesión!", Toast.LENGTH_LONG).show ();
                         }
                     }).execute (URLS.Conductor+"?correo="+email.getText());
                 }
-            }).execute (URLS.LoginApp+"?Correo="+email.getText()+"&password="+pass.getText());
+            }).execute (URLS.LoginApp+"?Correo="+email.getText()+"&password="+pass.getText()+"&phoneID="+deviceID);
         });
+    }
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        switch (requestCode) {
+            case PERMISSIONS:
+                if (grantResults [0] == PackageManager.PERMISSION_GRANTED && grantResults [1] == PackageManager.PERMISSION_GRANTED) {
+                    Toast.makeText (this, "Required permissions granted!", Toast.LENGTH_SHORT).show ();
+                    saveToken ();
+                }
+        }
+    }
+    @SuppressLint("HardwareIds")
+    private void saveToken () {
+
+        if (ContextCompat.checkSelfPermission (this, Manifest.permission.READ_PHONE_STATE) == PermissionChecker.PERMISSION_GRANTED
+                && ContextCompat.checkSelfPermission (this, Manifest.permission.ACCESS_WIFI_STATE) == PermissionChecker.PERMISSION_GRANTED) {
+
+            TelephonyManager telephonyManager = (TelephonyManager) getSystemService (TELEPHONY_SERVICE);
+            deviceID = telephonyManager != null ?  telephonyManager.getDeviceId () : null;
+
+            if (deviceID == null) {
+                WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService (WIFI_SERVICE);
+                deviceID = wifiManager != null ? wifiManager.getConnectionInfo ().getMacAddress () : null;
+            }
+        }
+
+        if (deviceID == null) {
+            Log.i (navigationActivity.TAG, "NULO");
+            return;
+        }
     }
     private Usuarios parseJSON (String json) {
         Usuarios usuario = new Gson().fromJson (json, Usuarios.class);

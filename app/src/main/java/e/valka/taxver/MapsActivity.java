@@ -40,6 +40,7 @@ import android.widget.Toast;
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback,NavigationView.OnNavigationItemSelectedListener{
 
     private GoogleMap mMap;
+    public static final String TAG = "PEKA";
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
     @Override
     protected void onCreate(Bundle savedInstanceState) {

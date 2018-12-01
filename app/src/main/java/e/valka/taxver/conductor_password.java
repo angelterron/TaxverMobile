@@ -24,6 +24,7 @@ import e.valka.taxver.Utils.URLS;
 
 public class conductor_password extends AppCompatActivity {
     Conductor con;
+    String deviceID;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,6 +34,7 @@ public class conductor_password extends AppCompatActivity {
         EditText pass1 = findViewById(R.id.pass1);
         EditText pass2 = findViewById(R.id.pass2);
         con = (Conductor)getIntent().getSerializableExtra("conductor");
+        deviceID = getIntent().getStringExtra("phoneID");
         nombre.setText("¡Bienvenide "+ con.IdPersonaNavigation.Nombre+"!\nIngresa tu nueva contraseña.");
         iniciar.setOnClickListener((v)->{
             if(!pass1.getText().toString().isEmpty() && !pass2.getText().toString().isEmpty()){
@@ -42,6 +44,7 @@ public class conductor_password extends AppCompatActivity {
                     usuario.Password = pass1.getText().toString();
                     usuario.IdPersona = con.IdPersona;
                     usuario.IdPersonaNavigation = con.IdPersonaNavigation;
+                    usuario.PhoneId = deviceID;
                     sendPost(usuario);
                 }else{
                     Toast.makeText (getBaseContext (), "¡Contraseñas diferentes!", Toast.LENGTH_LONG).show ();
@@ -83,7 +86,7 @@ public class conductor_password extends AppCompatActivity {
                             Intent iniciarsesion = new Intent(getBaseContext(),navigationActivity.class);
                             iniciarsesion.putExtra("usuario",usuario);
                             startActivity(iniciarsesion);
-                        }}).execute (URLS.LoginApp+"?Correo="+usuario.IdPersonaNavigation.Email+"&password="+usuario.Password);
+                        }}).execute (URLS.LoginApp+"?Correo="+usuario.IdPersonaNavigation.Email+"&password="+usuario.Password+"&phoneID="+usuario.PhoneId);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

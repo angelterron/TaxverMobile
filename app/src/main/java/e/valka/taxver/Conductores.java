@@ -14,10 +14,6 @@ public class Conductores extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_conductores);
         ConductorFragment conductorAdapter = new ConductorFragment();
-        getSupportFragmentManager()
-                .beginTransaction ()
-                .replace (R.id.container, conductorAdapter)
-                .setTransition (FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-                .commit ();
+
     }
 }

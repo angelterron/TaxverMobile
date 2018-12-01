@@ -1,30 +1,37 @@
 package e.valka.taxver.Fragments;
 
+import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
+import android.app.DialogFragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
+import com.squareup.picasso.Picasso;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 import e.valka.taxver.Models.Conductor;
 import e.valka.taxver.Models.ConductorHeader;
+import e.valka.taxver.Models.Posicionconductor;
+import e.valka.taxver.Models.Posiciones;
 import e.valka.taxver.R;
+import e.valka.taxver.Utils.CircleTransform;
 import e.valka.taxver.Utils.DownloadAsyncTask;
 import e.valka.taxver.Utils.URLS;
 
-public class ConductorFragment extends Fragment {
-    ArrayList<Conductor> conductorList = new ArrayList<>();
+public class ConductorFragment extends DialogFragment {
+    ArrayList<Posicionconductor> posicionesFragment = new ArrayList<>();
     RecyclerView recyclerView;
     @Override
     public View onCreateView (@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -36,19 +43,17 @@ public class ConductorFragment extends Fragment {
     }
 
     private void parseJSON (String json) {
-        Conductor[] conductores = new Gson().fromJson (json, Conductor[].class);
-        if (conductores == null) return;
-        for(int i = 0; i < conductores.length ; i++){
-            conductorList.add(conductores[i]);
-        }
-        recyclerView.setAdapter(new conductoresAdapter(conductorList));
+        Posiciones posiciones = new Gson().fromJson (json, Posiciones.class);
+        if (posiciones == null) return;
+        posicionesFragment = posiciones.Posiciones;
+        recyclerView.setAdapter(new conductoresAdapter(posicionesFragment));
 
     }
     class conductoresAdapter extends RecyclerView.Adapter<conductoresAdapter.conductorViewHolder> {
 
-        private ArrayList<Conductor> data;
+        private ArrayList<Posicionconductor> data;
 
-        conductoresAdapter (ArrayList<Conductor> d) {
+        conductoresAdapter (ArrayList<Posicionconductor> d) {
             data = d;
         }
 
@@ -57,17 +62,21 @@ public class ConductorFragment extends Fragment {
         public conductorViewHolder onCreateViewHolder (@NonNull ViewGroup parent, int viewType) {
             LayoutInflater inflater = LayoutInflater.from (parent.getContext ());
             View view = inflater.inflate (R.layout.conductor_item, parent, false);
-
+            conductorViewHolder con = new conductorViewHolder(view);
+            view.setOnClickListener((v)->{
+                Log.e("VIEW HOLDER","Me presionaron :v");
+                getDialog().dismiss();
+            });
             return new conductorViewHolder (view);
         }
 
         @Override
         public void onBindViewHolder (@NonNull conductorViewHolder holder, int position) {
-            Conductor conductor = data.get (position);
-            String Nombre = conductor.IdPersonaNavigation.Nombre+" "+ conductor.IdPersonaNavigation.ApellidoPaterno + " "+ conductor.IdPersonaNavigation.ApellidoMaterno;
-            String Placa = conductor.IdVehiculoNavigation.Placa;
-            String Vehiculo = conductor.IdVehiculoNavigation.Marca +" "+ conductor.IdVehiculoNavigation.Modelo + " "+conductor.IdVehiculoNavigation.Numero;
-            holder.setData (Nombre,Placa,Vehiculo);
+            Posicionconductor posicionconductor = data.get (position);
+            String Nombre = posicionconductor.IdConductorNavigation.IdPersonaNavigation.Nombre+" "+ posicionconductor.IdConductorNavigation.IdPersonaNavigation.ApellidoPaterno + " "+ posicionconductor.IdConductorNavigation.IdPersonaNavigation.ApellidoMaterno;
+            String Placa = posicionconductor.IdConductorNavigation.IdVehiculoNavigation.Placa;
+            String Vehiculo = posicionconductor.IdConductorNavigation.IdVehiculoNavigation.Marca +" "+ posicionconductor.IdConductorNavigation.IdVehiculoNavigation.Modelo + " "+posicionconductor.IdConductorNavigation.IdVehiculoNavigation.Numero;
+            holder.setData (Nombre,Placa,Vehiculo,posicionconductor.IdConductorNavigation.Foto,posicionconductor.IdConductor);
         }
 
         @Override
@@ -76,19 +85,25 @@ public class ConductorFragment extends Fragment {
         }
 
         class conductorViewHolder extends RecyclerView.ViewHolder {
+            int id;
             TextView texto,texto2,texto3;
+            ImageView foto;
 
             conductorViewHolder (View itemView) {
                 super (itemView);
                 texto = itemView.findViewById(R.id.Nombre);
                 texto2 = itemView.findViewById(R.id.Placas);
                 texto3 = itemView.findViewById(R.id.Vehiculo);
+                foto = itemView.findViewById(R.id.foto);
             }
 
-            void setData (String data1,String data2,String data3) {
+            void setData (String data1,String data2,String data3,String data4, int id) {
+                this.id = id;
                 texto.setText(data1);
                 texto2.setText(data2);
                 texto3.setText(data3);
+                Picasso.get().load(URLS.servidor+data4).transform( new CircleTransform()).fit().into(foto);
+
             }
         }
     }

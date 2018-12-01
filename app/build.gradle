@@ -4,7 +4,7 @@ android {
     compileSdkVersion 28
     defaultConfig {
         applicationId "e.valka.taxver"
-        minSdkVersion 23
+        minSdkVersion 22
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
@@ -26,6 +26,7 @@ dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'com.android.support:appcompat-v7:28.0.0-alpha1'
     implementation 'com.android.support.constraint:constraint-layout:1.1.0'
+    implementation 'com.squareup.picasso:picasso:2.71828'
     implementation 'com.github.pinball83:masked-edittext:1.0.4'
     implementation 'com.android.support:design:28.0.0'
     implementation 'com.google.code.gson:gson:2.8.5'
@@ -34,5 +35,15 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     implementation 'com.google.android.gms:play-services-maps:16.0.0'
     implementation 'com.android.support:support-v4:28.0.0'
-    implementation 'com.afollestad.material-dialogs:core:2.0.0-alpha1'
+    implementation 'com.microsoft.azure:notification-hubs-android-sdk:0.4@aar'
+    implementation 'com.microsoft.azure:azure-notifications-handler:1.0.1@aar'
+    implementation 'com.google.android.gms:play-services-gcm:16.0.0'
+    implementation 'com.google.firebase:firebase-core:16.0.4'
+    implementation 'com.google.firebase:firebase-messaging:17.3.4'
 }
+repositories {
+    maven {
+        url "http://dl.bintray.com/microsoftazuremobile/SDK"
+    }
+}
+apply plugin: 'com.google.gms.google-services'
