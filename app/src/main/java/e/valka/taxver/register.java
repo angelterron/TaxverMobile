@@ -1,6 +1,8 @@
 package e.valka.taxver;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -23,9 +25,15 @@ import e.valka.taxver.Models.Usuarios;
 import e.valka.taxver.Utils.DownloadAsyncTask;
 import e.valka.taxver.Utils.URLS;
 
+import static e.valka.taxver.Login.KEY_DEVICEID;
+import static e.valka.taxver.Login.KEY_EMAIL;
+import static e.valka.taxver.Login.KEY_PASSWORD;
+import static e.valka.taxver.Login.MY_PREFERENCES;
+
 public class register extends AppCompatActivity {
     TextView nombre,apellidos,telefono,correo,pass1,pass2,dia,mes,anio;
     Button registrar;
+    SharedPreferences sharedPreferences;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,7 +48,7 @@ public class register extends AppCompatActivity {
         mes = findViewById(R.id.mes);
         anio = findViewById(R.id.anio);
         registrar = findViewById(R.id.registrarse);
-
+        sharedPreferences = getSharedPreferences (MY_PREFERENCES, Context.MODE_PRIVATE);
         registrar.setOnClickListener((v)->{
             if(!pass1.getText().toString().isEmpty() && !pass2.getText().toString().isEmpty()){
                 if(pass1.getText().toString().equals(pass2.getText().toString())){
@@ -101,6 +109,11 @@ public class register extends AppCompatActivity {
                     new DownloadAsyncTask(s ->{
                         Usuarios usuario = parseJSON(s);
                         if(usuario != null){
+                            SharedPreferences.Editor editor = sharedPreferences.edit ();
+                            editor.putString(KEY_EMAIL,usuario.Nombre);
+                            editor.putString(KEY_PASSWORD,usuario.Password);
+                            editor.putString(KEY_DEVICEID,usuario.PhoneId);
+                            editor.apply();
                             Intent iniciarsesion = new Intent(getBaseContext(),navigationActivity.class);
                             iniciarsesion.putExtra("usuario",usuario);
                             startActivity(iniciarsesion);

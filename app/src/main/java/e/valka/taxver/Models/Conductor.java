@@ -8,6 +8,7 @@ public class Conductor implements Serializable {
     public int IdPersona;
     public String Foto;
     public int Status;
+    public int Tarifa;
     public Persona IdPersonaNavigation;
     public Vehiculo IdVehiculoNavigation;
 }

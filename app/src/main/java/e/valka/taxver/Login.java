@@ -2,7 +2,9 @@ package e.valka.taxver;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.wifi.WifiManager;
 import android.support.annotation.NonNull;
@@ -28,6 +30,12 @@ import e.valka.taxver.Utils.URLS;
 
 public class Login extends AppCompatActivity {
     public static final int PERMISSIONS = 1001;
+    public static final String MY_PREFERENCES = "myPref";
+    public static final String KEY_EMAIL = "email";
+    public static final String KEY_PASSWORD = "pass";
+    public static final String KEY_DEVICEID = "deviceid";
+
+    SharedPreferences sharedPreferences;
     String deviceID = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +45,8 @@ public class Login extends AppCompatActivity {
         Button login = findViewById(R.id.iniciarsesion);
         TextView email = findViewById(R.id.editText);
         TextView pass = findViewById(R.id.editText2);
+        String emailS, passwordS,device;
+
         registrar.setOnClickListener((v)->{
 
             Intent registrarse = new Intent(this,register.class);
@@ -50,11 +60,35 @@ public class Login extends AppCompatActivity {
                     new String [] {Manifest.permission.READ_PHONE_STATE, Manifest.permission.ACCESS_WIFI_STATE},
                     PERMISSIONS);
         }
+        sharedPreferences = getSharedPreferences (MY_PREFERENCES, Context.MODE_PRIVATE);
+        if (sharedPreferences.contains (KEY_EMAIL)) {
+            if(sharedPreferences.contains(KEY_PASSWORD)){
+                if(sharedPreferences.contains(KEY_DEVICEID)){
+                    emailS = sharedPreferences.getString(KEY_EMAIL,"");
+                    passwordS = sharedPreferences.getString(KEY_PASSWORD,"");
+                    device = sharedPreferences.getString(KEY_DEVICEID,"");
+                    new DownloadAsyncTask (s ->{
+                        Usuarios usuario = parseJSON(s);
+                        if(usuario != null){
+                            Intent iniciarsesion = new Intent(getBaseContext(),navigationActivity.class);
+                            iniciarsesion.putExtra("usuario",usuario);
+                            startActivity(iniciarsesion);
+                            }
+                    }).execute (URLS.LoginApp+"?Correo="+emailS+"&password="+passwordS+"&phoneID="+device);
+                }
+            }
+        }
         saveToken();
+
         login.setOnClickListener((v)->{
             new DownloadAsyncTask (s ->{
                 Usuarios usuario = parseJSON(s);
                 if(usuario != null){
+                    SharedPreferences.Editor editor = sharedPreferences.edit ();
+                    editor.putString(KEY_EMAIL,usuario.Nombre);
+                    editor.putString(KEY_PASSWORD,pass.getText().toString());
+                    editor.putString(KEY_DEVICEID,usuario.PhoneId);
+                    editor.apply();
                     Intent iniciarsesion = new Intent(getBaseContext(),navigationActivity.class);
                     iniciarsesion.putExtra("usuario",usuario);
                     startActivity(iniciarsesion);

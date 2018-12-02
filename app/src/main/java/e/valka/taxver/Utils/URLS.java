@@ -8,5 +8,10 @@ public class URLS {
     public static final String CreateCliente = "https://taxver.azurewebsites.net/Login/CreateCliente/";
     public static final String ActualizarPosicion = "https://taxver.azurewebsites.net/JSON/ActualizarPosicion/";
     public static final String servidor = "https://taxver.azurewebsites.net/";
+    public static final String statusPosicon = "https://taxver.azurewebsites.net/JSON/cambiarStatus/";
+    public static final String Pedir = "https://taxver.azurewebsites.net/JSON/Pedir/";
+    public static final String Viajes = "https://taxver.azurewebsites.net/JSON/Viajes/";
+    public static final String Objetos = "https://taxver.azurewebsites.net/JSON/ObjetosPerdidos/";
     public static final String TAG = "PKAT";
 }
+

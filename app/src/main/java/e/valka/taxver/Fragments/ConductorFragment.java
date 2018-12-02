@@ -29,6 +29,7 @@ import e.valka.taxver.R;
 import e.valka.taxver.Utils.CircleTransform;
 import e.valka.taxver.Utils.DownloadAsyncTask;
 import e.valka.taxver.Utils.URLS;
+import e.valka.taxver.navigationActivity;
 
 public class ConductorFragment extends DialogFragment {
     ArrayList<Posicionconductor> posicionesFragment = new ArrayList<>();
@@ -62,12 +63,14 @@ public class ConductorFragment extends DialogFragment {
         public conductorViewHolder onCreateViewHolder (@NonNull ViewGroup parent, int viewType) {
             LayoutInflater inflater = LayoutInflater.from (parent.getContext ());
             View view = inflater.inflate (R.layout.conductor_item, parent, false);
+
             conductorViewHolder con = new conductorViewHolder(view);
             view.setOnClickListener((v)->{
-                Log.e("VIEW HOLDER","Me presionaron :v");
+                navigationActivity.mainActivity.pedir(con.id);
                 getDialog().dismiss();
             });
-            return new conductorViewHolder (view);
+
+            return con;
         }
 
         @Override

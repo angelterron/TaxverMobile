@@ -1,6 +1,8 @@
 package e.valka.taxver;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -22,9 +24,14 @@ import e.valka.taxver.Models.Usuarios;
 import e.valka.taxver.Utils.DownloadAsyncTask;
 import e.valka.taxver.Utils.URLS;
 
+import static e.valka.taxver.Login.KEY_DEVICEID;
+import static e.valka.taxver.Login.KEY_EMAIL;
+import static e.valka.taxver.Login.KEY_PASSWORD;
+
 public class conductor_password extends AppCompatActivity {
     Conductor con;
-    String deviceID;
+    String deviceID = null;
+    SharedPreferences sharedPreferences;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,6 +43,7 @@ public class conductor_password extends AppCompatActivity {
         con = (Conductor)getIntent().getSerializableExtra("conductor");
         deviceID = getIntent().getStringExtra("phoneID");
         nombre.setText("¡Bienvenide "+ con.IdPersonaNavigation.Nombre+"!\nIngresa tu nueva contraseña.");
+        sharedPreferences = getSharedPreferences (Login.MY_PREFERENCES, Context.MODE_PRIVATE);
         iniciar.setOnClickListener((v)->{
             if(!pass1.getText().toString().isEmpty() && !pass2.getText().toString().isEmpty()){
                 if(pass1.getText().toString().equals(pass2.getText().toString())){
@@ -81,10 +89,15 @@ public class conductor_password extends AppCompatActivity {
 
                     conn.disconnect();
                     new DownloadAsyncTask(s ->{
-                        Usuarios usuario = parseJSON(s);
-                        if(usuario != null){
+                        Usuarios usuarioN = parseJSON(s);
+                        SharedPreferences.Editor editor = sharedPreferences.edit ();
+                        editor.putString(KEY_EMAIL,usuario.Nombre);
+                        editor.putString(KEY_PASSWORD,usuario.Password);
+                        editor.putString(KEY_DEVICEID,usuario.PhoneId);
+                        editor.apply();
+                        if(usuarioN != null){
                             Intent iniciarsesion = new Intent(getBaseContext(),navigationActivity.class);
-                            iniciarsesion.putExtra("usuario",usuario);
+                            iniciarsesion.putExtra("usuario",usuarioN);
                             startActivity(iniciarsesion);
                         }}).execute (URLS.LoginApp+"?Correo="+usuario.IdPersonaNavigation.Email+"&password="+usuario.Password+"&phoneID="+usuario.PhoneId);
                 } catch (Exception e) {

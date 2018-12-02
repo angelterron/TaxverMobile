@@ -18,18 +18,60 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
-        app:srcCompat="@drawable/ic_key" />
+        android:backgroundTint="@color/colorAccept"
+        app:srcCompat="@drawable/ic_check" />
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fabdesc"
+        android:id="@+id/fabcon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
-        app:srcCompat="@drawable/ic_menu_camera" />
+        app:srcCompat="@drawable/ic_account" />
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fabstop"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/fab_margin"
+        android:backgroundTint="@color/colorClse"
+        app:srcCompat="@drawable/ic_close" />
     <fragment
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/map"
         android:name="com.google.android.gms.maps.SupportMapFragment"/>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="50dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginLeft="10dp"
+        android:elevation="10dp"
+        android:background="@drawable/white_border"
+        android:id="@+id/relLayout1">
+
+        <ImageView
+            android:layout_width="15dp"
+            android:layout_height="15dp"
+            android:id="@+id/ic_magnify"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="10dp"
+            android:src="@drawable/ic_magnify"/>
+
+        <AutoCompleteTextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="10dp"
+            android:layout_toRightOf="@+id/ic_magnify"
+            android:layout_centerVertical="true"
+            android:textSize="15sp"
+            android:textColor="#000"
+            android:id="@+id/input_search"
+            android:background="@null"
+            android:hint="Ingresa el destino..."
+            android:imeOptions="actionSearch"/>
+
+
+    </RelativeLayout>
     </android.support.design.widget.CoordinatorLayout>
 
