@@ -72,10 +72,10 @@ public class ViajesFragment extends android.support.v4.app.Fragment {
         @Override
         public void onBindViewHolder (@NonNull viajeViewHolder holder, int position) {
             Viaje viaje = data.get(position);
-            String conductor = viaje.IdConductorNavigation.IdPersonaNavigation.Nombre + viaje.IdConductorNavigation.IdPersonaNavigation.ApellidoPaterno + viaje.IdConductorNavigation.IdPersonaNavigation.ApellidoMaterno;
+            String conductor = viaje.IdConductorNavigation.IdPersonaNavigation.Nombre +" "+ viaje.IdConductorNavigation.IdPersonaNavigation.ApellidoPaterno + " "+viaje.IdConductorNavigation.IdPersonaNavigation.ApellidoMaterno;
             String distancia = viaje.Kilometros+"Kms";
             String tarifa = "$"+viaje.Tarifa;
-            holder.setData (conductor,distancia,tarifa);
+            holder.setData (conductor,distancia,tarifa,viaje.Fecha);
         }
 
         @Override
@@ -85,19 +85,21 @@ public class ViajesFragment extends android.support.v4.app.Fragment {
 
         class viajeViewHolder extends RecyclerView.ViewHolder {
             int id;
-            TextView texto,texto2,texto3;
+            TextView texto,texto2,texto3,texto4;
 
             viajeViewHolder (View itemView) {
                 super (itemView);
                 texto = itemView.findViewById(R.id.conductor);
                 texto2 = itemView.findViewById(R.id.distancia);
                 texto3 = itemView.findViewById(R.id.tarifa);
+                texto4 = itemView.findViewById(R.id.fecha);
             }
 
-            void setData (String data1,String data2,String data3) {
+            void setData (String data1,String data2,String data3,String data4) {
                 texto.setText(data1);
                 texto2.setText(data2);
                 texto3.setText(data3);
+                texto4.setText(data4);
 
             }
         }
